@@ -1,5 +1,8 @@
+/development
 /dist
 /staging
 /node_modules
 /app/vendor
 phantomjsdriver.log
+*~
+*.swp
