@@ -1,0 +1,40 @@
+<form>
+	<div>
+	Customer ID
+	<input id="txtCustomerId" ng-model="customer.customerId"/>
+	</div>
+	
+	<div>
+	First Name
+	<input id="txtFirstName" ng-model="customer.firstName"/>
+	</div>
+	
+	<div>
+	Last Name
+	<input id="txtLastName" ng-model="customer.lastName"/>
+	</div>
+	
+	<div>
+	Phone Number
+	<input id="txtPhoneNumber" ng-model="customer.phoneNumber"/>
+	</div>
+	
+	<div>
+	Email
+	<input id="txtEmail" ng-model="customer.email"/>
+	</div>
+	
+	<button id="btnRegisterCustomer" ng-click="register()">Register/Add</button>
+	
+
+</form>
+
+
+<div>
+	Customer ID: {{customer.customerId}}<br/>
+	First Name: {{customer.firstName}}<br/>
+	Last Name: {{customer.lastName}}<br/>
+	Phone Number: {{customer.phoneNumber}}<br/>
+	Email: {{customer.email}}<br/>
+	
+</div>

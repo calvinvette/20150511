@@ -1,0 +1,6 @@
+{
+  "name": "ctsng.config",
+  "constants": { 
+    "ENV": {}
+  }
+}
