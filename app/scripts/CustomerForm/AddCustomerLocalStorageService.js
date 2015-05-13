@@ -17,10 +17,30 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 		var wls = window.localStorage.getItem("customers");
 		if (wls) {
 			customers = JSON.parse(wls);
+			// TODO - Use "extend" to convert regular generic object into customer
+			// jQuery, Underscore, or Angular
+		}
+		for (var i = 0; i < customers.length; i++) {
+			var cust = new Customer();
+			angular.extend(cust, customers[i]);
+			customers[i] = cust;
 		}
 		customers.push(customer);
 		window.localStorage.setItem("customers", JSON.stringify(customers));
 		//console.log(customers);
 	};
+	
+	var wls = window.localStorage.getItem("customers");
+	if (wls) {
+		customers = JSON.parse(wls);
+		for (var i = 0; i < customers.length; i++) {
+			var cust = new Customer();
+			angular.extend(cust, customers[i]);
+			customers[i] = cust;
+		}
+		$rootScope.$broadcast("CustomerListUpdated", customers);
+	}
+	
+		
 
 });

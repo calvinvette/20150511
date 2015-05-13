@@ -9,8 +9,7 @@ angular.module('ctsng', [
   'ctsng.foo'
 ])
 .config(['$routeProvider', function (
-	$routeProvider 
-	
+	$routeProvider 	
 	// , $locationProvider // We'll use this later for ui-router
 	// , $httpProvider
 	) {
@@ -20,15 +19,20 @@ angular.module('ctsng', [
 			controller: 'CustomerFormController' // A JS Angular Controller with this name, 
 				// typically in a file called CustomerForm.controller.js
 		})
+		.when("/Customers", {
+			templateUrl: "scripts/CustomerTable/CustomerTable.html"
+		})
 		.otherwise({
 			redirectTo: "404.html"
 		});
 }]) 
 .run(function($timeout, $rootScope, $location
+	// Listing services here to get them instantiated up front
+	// Especially if they have to start out by registering event handlers
 	, AddCustomerService
 	, AddCustomerLocalStorageService
 	){
-  console.log('Your angular app is initialized.  Happy hacking!')
+  console.log('Your angular app is initialized.  Happy hacking!');
 })
 
 
@@ -56,11 +60,31 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 		var wls = window.localStorage.getItem("customers");
 		if (wls) {
 			customers = JSON.parse(wls);
+			// TODO - Use "extend" to convert regular generic object into customer
+			// jQuery, Underscore, or Angular
+		}
+		for (var i = 0; i < customers.length; i++) {
+			var cust = new Customer();
+			angular.extend(cust, customers[i]);
+			customers[i] = cust;
 		}
 		customers.push(customer);
 		window.localStorage.setItem("customers", JSON.stringify(customers));
 		//console.log(customers);
 	};
+	
+	var wls = window.localStorage.getItem("customers");
+	if (wls) {
+		customers = JSON.parse(wls);
+		for (var i = 0; i < customers.length; i++) {
+			var cust = new Customer();
+			angular.extend(cust, customers[i]);
+			customers[i] = cust;
+		}
+		$rootScope.$broadcast("CustomerListUpdated", customers);
+	}
+	
+		
 
 });
 "use strict";
@@ -77,11 +101,29 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 		//console.log(evt);
 		addCustomer(data);
 	});
-
+	
 	var addCustomer = function(customer) {
 		customers.push(customer);
 		console.log(customers);
+	};	
+	
+	$rootScope.$on("CustomerListUpdated", function(evt, data) {
+			if (customers != data) {
+				console.log("Changing customers!");
+				customers = data;
+			} 
+	});
+	
+	$rootScope.$on("CustomerListRequestEvent", function(evt, data) {
+		$rootScope.$broadcast("CustomerListUpdated", getCustomers());
+	});
+
+	var getCustomers = function() {
+		return customers;
 	};
+
+	
+
 
 });
 /**
@@ -94,18 +136,26 @@ var Customer = function(customerId, firstName, lastName, phoneNumber, email) { /
 	this.lastName = lastName ||  "";
 	this.phoneNumber = phoneNumber || "";
 	this.email = email || "";
-
 };
 
 Customer.prototype.getFirstName = function() {
 	return this.firstName;
 };
 
+Customer.prototype.getLastName = function() {
+	return this.lastName;
+};
+
+
 Customer.prototype.setFirstName = function(firstName) {
 	this.firstName = firstName;
 };
 
-
+Customer.prototype.toString = function() {
+	return "Customer #" + this.customerId 
+			+ ": " + this.getFirstName()
+			+ " " + this.getLastName()
+};
 "use strict"; // require us to pre-declare our vars
 
 /**
@@ -126,6 +176,22 @@ angular.module('ctsng').controller('CustomerFormController', function($scope, $r
 
 });
 
+
+angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope) {
+	$scope.customers = [];
+	$scope.selectedCustomer = new Customer();
+	
+	$rootScope.$on("CustomerListUpdated", function(evt, data) {
+		$scope.customers = data;
+	});
+	
+	$scope.$emit("CustomerListRequestEvent");
+	
+	$scope.selectCustomer = function(cust) {
+		$scope.selectedCustomer = cust;
+		console.log("Just selected: " + $scope.selectedCustomer);
+	};
+});
 
 angular.module('ctsng.foo', [
 

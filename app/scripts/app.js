@@ -9,8 +9,7 @@ angular.module('ctsng', [
   'ctsng.foo'
 ])
 .config(['$routeProvider', function (
-	$routeProvider 
-	
+	$routeProvider 	
 	// , $locationProvider // We'll use this later for ui-router
 	// , $httpProvider
 	) {
@@ -20,14 +19,19 @@ angular.module('ctsng', [
 			controller: 'CustomerFormController' // A JS Angular Controller with this name, 
 				// typically in a file called CustomerForm.controller.js
 		})
+		.when("/Customers", {
+			templateUrl: "scripts/CustomerTable/CustomerTable.html"
+		})
 		.otherwise({
 			redirectTo: "404.html"
 		});
 }]) 
 .run(function($timeout, $rootScope, $location
+	// Listing services here to get them instantiated up front
+	// Especially if they have to start out by registering event handlers
 	, AddCustomerService
 	, AddCustomerLocalStorageService
 	){
-  console.log('Your angular app is initialized.  Happy hacking!')
+  console.log('Your angular app is initialized.  Happy hacking!');
 })
 
