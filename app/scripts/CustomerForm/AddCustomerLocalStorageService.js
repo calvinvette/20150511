@@ -32,7 +32,7 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 	
 	var wls = window.localStorage.getItem("customers");
 	if (wls) {
-		customers = JSON.parse(wls);
+		var customers = JSON.parse(wls);
 		for (var i = 0; i < customers.length; i++) {
 			var cust = new Customer();
 			angular.extend(cust, customers[i]);

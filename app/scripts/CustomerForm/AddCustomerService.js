@@ -33,6 +33,9 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 		return customers;
 	};
 
+	this.getCustomers = function() {
+		return customers;
+	}
 	
 
 

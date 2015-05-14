@@ -75,7 +75,7 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 	
 	var wls = window.localStorage.getItem("customers");
 	if (wls) {
-		customers = JSON.parse(wls);
+		var customers = JSON.parse(wls);
 		for (var i = 0; i < customers.length; i++) {
 			var cust = new Customer();
 			angular.extend(cust, customers[i]);
@@ -122,6 +122,9 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 		return customers;
 	};
 
+	this.getCustomers = function() {
+		return customers;
+	}
 	
 
 
@@ -177,15 +180,18 @@ angular.module('ctsng').controller('CustomerFormController', function($scope, $r
 });
 
 
-angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope) {
-	$scope.customers = [];
+angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope, AddCustomerService) {
+	$scope.customers = AddCustomerService.getCustomers();
 	$scope.selectedCustomer = new Customer();
-	
+
+	/*
 	$rootScope.$on("CustomerListUpdated", function(evt, data) {
 		$scope.customers = data;
 	});
-	
+
+	// At startup, this will request the list of customers
 	$scope.$emit("CustomerListRequestEvent");
+	*/
 	
 	$scope.selectCustomer = function(cust) {
 		$scope.selectedCustomer = cust;
