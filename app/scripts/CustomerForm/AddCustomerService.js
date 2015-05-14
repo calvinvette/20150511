@@ -33,9 +33,15 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 		return customers;
 	};
 
+	/*
+	Only use this version if you are using
+	direct dependency injection of the AddCustomerService
+	(This creates "tight coupling")
+
 	this.getCustomers = function() {
 		return customers;
 	}
+	*/
 	
 
 
