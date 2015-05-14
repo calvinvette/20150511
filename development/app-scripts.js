@@ -41,6 +41,124 @@ angular.module("ctsng.config", [])
 .constant("ENV", {})
 
 ;
+"use strict"; // require us to pre-declare our vars
+
+/**
+ * CustomerForm.controller.js
+ * Supports the CustomerForm.html for registering a new Customer
+ */
+angular.module('ctsng').controller('CustomerFormController', function($scope, $rootScope) {
+	$scope.customer = new Customer(); // { }
+	$scope.register = function() {
+		
+		// Loosely coupled systems use Event-Driven approaches
+		$rootScope.$broadcast("CustomerRegisteredEvent", $scope.customer);
+		// Tightly coupled - avoid this
+		//AddCustomerService.addCustomer($scope.customer); 
+		
+		$scope.customer = new Customer();
+	};
+
+});
+
+
+/*
+This is the tightly-coupled direct version of getting the customer list from the AddCustomerService:
+
+angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope, AddCustomerService) {
+ $scope.customers = AddCustomerService.getCustomers();
+
+ */
+angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope) {
+	$scope.customers = [ ];
+	$scope.selectedCustomer = new Customer(); // For selecting, esp. wrt. Master-Detail
+	$scope.workingCustomer = new Customer(); // For Editing,
+
+	$scope.editCustomer = function(cust) {
+		console.log("Editing: " + cust);
+		angular.copy(cust, $scope.workingCustomer); // Copy the original into workingCustomer to edit
+	};
+
+	$scope.isEditing = function(cust) {
+		return $scope.workingCustomer.customerId == cust.customerId; // == or ===
+	};
+
+	$rootScope.$on("CustomerListUpdated", function(evt, data) {
+		$scope.customers = data;
+	});
+
+	// At startup, this will request the list of customers
+	$scope.$emit("CustomerListRequestEvent");
+
+	$scope.selectCustomer = function(cust) {
+		$scope.selectedCustomer = cust;
+		console.log("Just selected: " + $scope.selectedCustomer);
+	};
+
+	$scope.keyClick = function(evt, cust)  {
+		switch(evt.keyCode) {
+			case 13: // Enter key
+				$scope.saveWorkingCustomer(cust);
+				break;
+			case 27: // Escape key
+				$scope.revertToOriginal(cust);
+				break;
+		}
+	};
+
+	$scope.saveWorkingCustomer = function(cust) {
+		angular.copy($scope.workingCustomer, cust);
+		$scope.workingCustomer = new Customer(); // -1 customer shouldn't match any customer in the array
+	};
+
+	$scope.revertToOriginal = function(cust) {
+		$scope.workingCustomer = new Customer(); // -1 customer shouldn't match any customer in the array
+	};
+});
+
+angular.module('ctsng.foo', [
+
+])
+.config(function ($locationProvider, $httpProvider) {
+
+})
+
+.controller('CtsngController', function($scope) {
+  $scope.foo;
+  $scope.fooBar = function(){
+    $scope.foo = 'bar';
+  }
+})  
+/**
+  * Customer.js
+  *
+  */
+var Customer = function(customerId, firstName, lastName, phoneNumber, email) { // Customer CTOR
+	this.customerId =  customerId || -1; // "-1"
+	this.firstName = firstName || "";
+	this.lastName = lastName ||  "";
+	this.phoneNumber = phoneNumber || "";
+	this.email = email || "";
+};
+
+Customer.prototype.getFirstName = function() {
+	return this.firstName;
+};
+
+Customer.prototype.getLastName = function() {
+	return this.lastName;
+};
+
+
+Customer.prototype.setFirstName = function(firstName) {
+	this.firstName = firstName;
+};
+
+Customer.prototype.toString = function() {
+	return "Customer #" + this.customerId 
+			+ ": " + this.getFirstName()
+			+ " " + this.getLastName()
+};
 "use strict";
 
 /**
@@ -135,93 +253,3 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 
 
 });
-/**
-  * Customer.js
-  *
-  */
-var Customer = function(customerId, firstName, lastName, phoneNumber, email) { // Customer CTOR
-	this.customerId =  customerId || -1; // "-1"
-	this.firstName = firstName || "";
-	this.lastName = lastName ||  "";
-	this.phoneNumber = phoneNumber || "";
-	this.email = email || "";
-};
-
-Customer.prototype.getFirstName = function() {
-	return this.firstName;
-};
-
-Customer.prototype.getLastName = function() {
-	return this.lastName;
-};
-
-
-Customer.prototype.setFirstName = function(firstName) {
-	this.firstName = firstName;
-};
-
-Customer.prototype.toString = function() {
-	return "Customer #" + this.customerId 
-			+ ": " + this.getFirstName()
-			+ " " + this.getLastName()
-};
-"use strict"; // require us to pre-declare our vars
-
-/**
- * CustomerForm.controller.js
- * Supports the CustomerForm.html for registering a new Customer
- */
-angular.module('ctsng').controller('CustomerFormController', function($scope, $rootScope) {
-	$scope.customer = new Customer(); // { }
-	$scope.register = function() {
-		
-		// Loosely coupled systems use Event-Driven approaches
-		$rootScope.$broadcast("CustomerRegisteredEvent", $scope.customer);
-		// Tightly coupled - avoid this
-		//AddCustomerService.addCustomer($scope.customer); 
-		
-		$scope.customer = new Customer();
-	};
-
-});
-
-
-/*
-This is the tightly-coupled direct version of getting the customer list from the AddCustomerService:
-
-angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope, AddCustomerService) {
- $scope.customers = AddCustomerService.getCustomers();
-
- */
-angular.module("ctsng").controller("CustomerTableController", function($scope, $rootScope) {
-	$scope.customers = [ ];
-	$scope.selectedCustomer = new Customer();
-
-
-	$rootScope.$on("CustomerListUpdated", function(evt, data) {
-		$scope.customers = data;
-	});
-
-	// At startup, this will request the list of customers
-	$scope.$emit("CustomerListRequestEvent");
-
-	$scope.selectCustomer = function(cust) {
-		$scope.selectedCustomer = cust;
-		console.log("Just selected: " + $scope.selectedCustomer);
-	};
-
-});
-
-angular.module('ctsng.foo', [
-
-])
-.config(function ($locationProvider, $httpProvider) {
-
-})
-
-.controller('CtsngController', function($scope) {
-  $scope.foo;
-  $scope.fooBar = function(){
-    $scope.foo = 'bar';
-  }
-})  

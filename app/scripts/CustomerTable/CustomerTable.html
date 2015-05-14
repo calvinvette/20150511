@@ -8,12 +8,47 @@
 		<th>Phone Number</th>
 		<th>Email</th>
 	</tr>
-	<tr ng-repeat="cust in customers" ng-click="selectCustomer(cust)">
-		<td>{{cust.customerId}}</td>
-		<td>{{cust.firstName}}</td>
-		<td>{{cust.lastName}}</td>
-		<td>{{cust.phoneNumber}}</td>
-		<td>{{cust.email}}</td>
+	<tr ng-repeat="cust in customers" ng-dblclick="editCustomer(cust)" ng-keyup="keyClick($event, cust)">
+		<td>
+			<span ng-hide="isEditing(cust)">
+				{{cust.customerId}}
+			</span>
+			<span ng-show="isEditing(cust)">
+				<input ng-model="workingCustomer.customerId"/>
+			</span>
+		</td>
+		<td>
+			<span ng-hide="isEditing(cust)">
+				{{cust.firstName}}
+			</span>
+			<span ng-show="isEditing(cust)">
+				<input ng-model="workingCustomer.firstName"/>
+			</span>
+		</td>
+		<td>
+			<span ng-hide="isEditing(cust)">
+				{{cust.lastName}}
+			</span>
+			<span ng-show="isEditing(cust)">
+				<input ng-model="workingCustomer.lastName"/>
+			</span>
+		</td>
+		<td>
+			<span ng-hide="isEditing(cust)">
+				{{cust.phoneNumber}}
+			</span>
+			<span ng-show="isEditing(cust)">
+				<input ng-model="workingCustomer.phoneNumber"/>
+			</span>
+		</td>
+		<td>
+			<span ng-hide="isEditing(cust)">
+				{{cust.email}}
+			</span>
+			<span ng-show="isEditing(cust)">
+				<input ng-model="workingCustomer.email"/>
+			</span>
+		</td>
 	</tr>
 </table>
 </div>
