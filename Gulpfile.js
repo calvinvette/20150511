@@ -277,6 +277,7 @@ gulp.task('watch', function(){
   gulp.watch(['app/scripts/**/*.js', '!app/scripts/**/*.test.js'], ['appScripts']);
   gulp.watch('app/scripts/**/*.tpl.html', ['templates']);
   gulp.watch('app/styles/**/*.scss', ['appStyles']);
+  gulp.watch(otherAssets, ['build-other-files']);
   gulp.watch('app/_index.html', ['index-development']);
 })
 

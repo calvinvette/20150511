@@ -32,6 +32,7 @@ angular.module("ctsng").controller("CustomerTableController", function($scope, $
 	};
 
 	$scope.keyClick = function(evt, cust)  {
+		debugger;
 		switch(evt.keyCode) {
 			case 13: // Enter key
 				$scope.saveWorkingCustomer(cust);

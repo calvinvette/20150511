@@ -62,6 +62,19 @@ angular.module('ctsng').controller('CustomerFormController', function($scope, $r
 });
 
 
+angular.module('ctsng.foo', [
+
+])
+.config(function ($locationProvider, $httpProvider) {
+
+})
+
+.controller('CtsngController', function($scope) {
+  $scope.foo;
+  $scope.fooBar = function(){
+    $scope.foo = 'bar';
+  }
+})  
 /*
 This is the tightly-coupled direct version of getting the customer list from the AddCustomerService:
 
@@ -96,6 +109,7 @@ angular.module("ctsng").controller("CustomerTableController", function($scope, $
 	};
 
 	$scope.keyClick = function(evt, cust)  {
+		debugger;
 		switch(evt.keyCode) {
 			case 13: // Enter key
 				$scope.saveWorkingCustomer(cust);
@@ -116,19 +130,6 @@ angular.module("ctsng").controller("CustomerTableController", function($scope, $
 	};
 });
 
-angular.module('ctsng.foo', [
-
-])
-.config(function ($locationProvider, $httpProvider) {
-
-})
-
-.controller('CtsngController', function($scope) {
-  $scope.foo;
-  $scope.fooBar = function(){
-    $scope.foo = 'bar';
-  }
-})  
 /**
   * Customer.js
   *

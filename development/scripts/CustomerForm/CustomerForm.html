@@ -1,27 +1,91 @@
-<form>
+<form name="customerForm" novalidate="novalidate">
+	<div>
+	<span>
+	<h6 style="background-color: #000000">The Form is:</h6>
+		Valid: {{customerForm.$valid}} or Invalid: {{customerForm.$invalid}}<br/>
+		Pristine: {{customerForm.$pristine}} or Dirty: {{customerForm.$dirty}} <br/>
+		<ul>
+			<li ng-repeat="field in customerForm">{{field.$name}}: <span ng-show="field.$error">{{field.$error}}</span></li>
+		</ul>
+	</span>
+	</div>
+
+
 	<div>
 	Customer ID
-	<input id="txtCustomerId" ng-model="customer.customerId"/>
+	<input id="txtCustomerId" name="txtCustomerId" ng-model="customer.customerId" required="required" type="number" min="1" max="9999" />
+	<div>
+	<span>
+		Valid: {{customerForm.txtCustomerId.$valid}} or Invalid: {{customerForm.txtCustomerId.$invalid}}<br/>
+		Pristine: {{customerForm.txtCustomerId.$pristine}} or Dirty: {{customerForm.txtCustomerId.$dirty}} <br/>
+		Touched: {{customerForm.txtCustomerId.$touched}} or Untouched: {{customerForm.txtCustomerId.$untouched}}  <br/>
+	</span>
+	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.number" class="error">
+		There is an error in your customerId. It must be a number.
+		</span>
+	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.required" class="error">
+		There is an error in your customerId. It is required.
+	</span>
+	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.min" class="error">
+		There is an error in your customerId. It must be at least 1.
+	</span>
+	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.max" class="error">
+		There is an error in your customerId. It must be at most 9999.
+	</span>
+	</div>
+	
+	
 	</div>
 	
 	<div>
 	First Name
-	<input id="txtFirstName" ng-model="customer.firstName"/>
+	<input id="txtFirstName" name="txtFirstName" ng-model="customer.firstName" minlength="4" maxlength="20"/>
+	</div>
+	<div>
+	<span>
+		Valid: {{customerForm.txtFirstName.$valid}} or Invalid: {{customerForm.txtFirstName.$invalid}}<br/>
+		Pristine: {{customerForm.txtFirstName.$pristine}} or Dirty: {{customerForm.txtFirstName.$dirty}} <br/>
+		Touched: {{customerForm.txtFirstName.$touched}} <br/>
+	</span>
+	<span class="error">
+		{{customerForm.txtFirstName.$error}}
+	</span>
 	</div>
 	
 	<div>
 	Last Name
-	<input id="txtLastName" ng-model="customer.lastName"/>
+	<input id="txtLastName" name="txtLastName" ng-model="customer.lastName"/>
+	</div>
+	<div>
+	<span>
+		Valid: {{customerForm.txtLastName.$valid}} or Invalid: {{customerForm.txtLastName.$invalid}}<br/>
+		Pristine: {{customerForm.txtLastName.$pristine}} or Dirty: {{customerForm.txtLastName.$dirty}} <br/>
+		Touched: {{customerForm.txtLastName.$touched}} <br/>
+	</span>
 	</div>
 	
 	<div>
 	Phone Number
-	<input id="txtPhoneNumber" ng-model="customer.phoneNumber"/>
+	<input id="txtPhoneNumber" name="txtPhoneNumber" ng-model="customer.phoneNumber" regex="\d{3}-\d{3}-\d{4}"/>
+	</div>
+	<div>
+	<span>
+		Valid: {{customerForm.txtPhoneNumber.$valid}} or Invalid: {{customerForm.txtPhoneNumber.$invalid}}<br/>
+		Pristine: {{customerForm.txtPhoneNumber.$pristine}} or Dirty: {{customerForm.txtPhoneNumber.$dirty}} <br/>
+		Touched: {{customerForm.txtPhoneNumber.$touched}} <br/>
+	</span>
 	</div>
 	
 	<div>
 	Email
-	<input id="txtEmail" ng-model="customer.email"/>
+	<input id="txtEmail" name="txtEmail" ng-model="customer.email" email/>
+	</div>
+	<div>
+	<span>
+		Valid: {{customerForm.txtEmail.$valid}} or Invalid: {{customerForm.txtEmail.$invalid}}<br/>
+		Pristine: {{customerForm.txtEmail.$pristine}} or Dirty: {{customerForm.txtEmail.$dirty}} <br/>
+		Touched: {{customerForm.txtEmail.$touched}} <br/>
+	</span>
 	</div>
 	
 	<button id="btnRegisterCustomer" ng-click="register()">Register/Add</button>
