@@ -22,7 +22,7 @@
 	</span>
 	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.number" class="error">
 		There is an error in your customerId. It must be a number.
-		</span>
+	</span>
 	<span ng-show="customerForm.txtCustomerId.$dirty && customerForm.txtCustomerId.$error.required" class="error">
 		There is an error in your customerId. It is required.
 	</span>
@@ -36,10 +36,17 @@
 	
 	
 	</div>
-	
+
+	Name Pattern: <input ng-model="namePattern"/>
+
 	<div>
 	First Name
-	<input id="txtFirstName" name="txtFirstName" ng-model="customer.firstName" minlength="4" maxlength="20"/>
+	<input id="txtFirstName"
+		   name="txtFirstName"
+		   ng-model="customer.firstName"
+		   minlength="4"
+		   maxlength="20"
+		   ng-pattern="namePattern"/> <!-- $scope var or function -->
 	</div>
 	<div>
 	<span>
@@ -49,6 +56,8 @@
 	</span>
 	<span class="error">
 		{{customerForm.txtFirstName.$error}}
+	</span>
+
 	</span>
 	</div>
 	

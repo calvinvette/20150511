@@ -31,6 +31,7 @@ angular.module('ctsng', [
 	// Especially if they have to start out by registering event handlers
 	, AddCustomerService
 	, AddCustomerLocalStorageService
+    , AddCustomerRESTService
 	){
   console.log('Your angular app is initialized.  Happy hacking!');
 })
@@ -48,6 +49,18 @@ angular.module("ctsng.config", [])
  * Supports the CustomerForm.html for registering a new Customer
  */
 angular.module('ctsng').controller('CustomerFormController', function($scope, $rootScope) {
+	$scope.namePattern = "^[- A-Za-z]*$";
+
+	/*
+	$scope.namePattern = function() {
+		if ($locale == "en_us") {
+			return "^[- A-Za-z]*$";
+		} else if ($locale == "zh") {
+			return "...";
+		}
+	};
+	*/
+
 	$scope.customer = new Customer(); // { }
 	$scope.register = function() {
 		
@@ -62,19 +75,6 @@ angular.module('ctsng').controller('CustomerFormController', function($scope, $r
 });
 
 
-angular.module('ctsng.foo', [
-
-])
-.config(function ($locationProvider, $httpProvider) {
-
-})
-
-.controller('CtsngController', function($scope) {
-  $scope.foo;
-  $scope.fooBar = function(){
-    $scope.foo = 'bar';
-  }
-})  
 /*
 This is the tightly-coupled direct version of getting the customer list from the AddCustomerService:
 
@@ -175,34 +175,96 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 	});
 
 	var addCustomer = function(customer) {
-		var customers = [];
+		var customers = getCustomers();
+		customers.push(customer);
+		saveCustomers(customers);
+	};
+
+    var saveCustomers = function(customers) {
+        window.localStorage.setItem("customers", JSON.stringify(customers));
+    }
+
+	$rootScope.$on("CustomerListUpdated", function(evt, data) {
+        var customers = getCustomers();
+		if (customers != data) { // TODO Weak comparison here  - go deeper later
+			console.log("Saving customers!");
+            saveCustomers(data);
+		}
+	});
+	
+	var getCustomers = function() {
 		var wls = window.localStorage.getItem("customers");
 		if (wls) {
-			customers = JSON.parse(wls);
-			// TODO - Use "extend" to convert regular generic object into customer
-			// jQuery, Underscore, or Angular
+			var customers = JSON.parse(wls);
+			for (var i = 0; i < customers.length; i++) {
+				var cust = new Customer();
+				angular.extend(cust, customers[i]);
+				customers[i] = cust;
+			}
+			return customers;
 		}
-		for (var i = 0; i < customers.length; i++) {
-			var cust = new Customer();
-			angular.extend(cust, customers[i]);
-			customers[i] = cust;
-		}
-		customers.push(customer);
-		window.localStorage.setItem("customers", JSON.stringify(customers));
-		//console.log(customers);
+		return [];
 	};
-	
-	var wls = window.localStorage.getItem("customers");
-	if (wls) {
-		var customers = JSON.parse(wls);
-		for (var i = 0; i < customers.length; i++) {
-			var cust = new Customer();
-			angular.extend(cust, customers[i]);
-			customers[i] = cust;
+
+	// Do this on init
+	var init = function() {
+		var customers = getCustomers();
+		if (customers && customers.length > 0) {
+			$rootScope.$broadcast("CustomerListUpdated", getCustomers());
 		}
-		$rootScope.$broadcast("CustomerListUpdated", customers);
 	}
+
+    init();
+
 	
+		
+
+});
+"use strict";
+
+/**
+ * Add Customer Local Storage Service
+ * Take a customer and store it in local storage
+ *
+ */
+angular.module('ctsng').service("AddCustomerRESTService", function($rootScope, $http) {
+	
+	$rootScope.$on("CustomerRegisteredEvent", function(evt, data) {
+		//console.log(evt);
+		addCustomer(data);
+	});
+
+	var addCustomer = function(customer) {
+		console.log("Updating server with new customer: " + customer);
+        $http.post("http://www.nextgeneducation.com/weasley/", customer)
+            .success(function(data, status, headers, config) {
+                console.log("Kapla! Server updated with customer: " + customer);
+            })
+            .error(function(error, status, headers, config) {
+                console.log("Failed to update server with: " + customer + ": " + error);
+            });
+	};
+
+
+	$rootScope.$on("CustomerListRequestEvent", function(evt, data) {
+		$http.get("http://www.nextgeneducation.com/weasley/customers.json")
+            .success(function(data, status, headers, config) {
+                // returns raw {} objects, not customers, so convert the data[] to customers[]
+                var customers = data;
+                for (var i = 0; i < customers.length; i++) {
+                    var cust = new Customer();
+                    angular.extend(cust, customers[i]);
+                    customers[i] = cust;
+                }
+                $rootScope.$broadcast("CustomerListUpdated", customers);
+            })
+            .error(function(error, status, headers, config) {
+                console.log("Failed to retrieve Weasley customer data!");
+                console.log(error);
+            });
+
+    });
+
 		
 
 });
@@ -234,7 +296,9 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 	});
 	
 	$rootScope.$on("CustomerListRequestEvent", function(evt, data) {
-		$rootScope.$broadcast("CustomerListUpdated", getCustomers());
+		if (customers.length != 0) {
+			$rootScope.$broadcast("CustomerListUpdated", getCustomers());
+		}
 	});
 
 	var getCustomers = function() {
@@ -254,3 +318,16 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 
 
 });
+angular.module('ctsng.foo', [
+
+])
+.config(function ($locationProvider, $httpProvider) {
+
+})
+
+.controller('CtsngController', function($scope) {
+  $scope.foo;
+  $scope.fooBar = function(){
+    $scope.foo = 'bar';
+  }
+})  

@@ -5,6 +5,18 @@
  * Supports the CustomerForm.html for registering a new Customer
  */
 angular.module('ctsng').controller('CustomerFormController', function($scope, $rootScope) {
+	$scope.namePattern = "^[- A-Za-z]*$";
+
+	/*
+	$scope.namePattern = function() {
+		if ($locale == "en_us") {
+			return "^[- A-Za-z]*$";
+		} else if ($locale == "zh") {
+			return "...";
+		}
+	};
+	*/
+
 	$scope.customer = new Customer(); // { }
 	$scope.register = function() {
 		

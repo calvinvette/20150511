@@ -26,7 +26,9 @@ angular.module('ctsng').service("AddCustomerService", function($rootScope) {
 	});
 	
 	$rootScope.$on("CustomerListRequestEvent", function(evt, data) {
-		$rootScope.$broadcast("CustomerListUpdated", getCustomers());
+		if (customers.length != 0) {
+			$rootScope.$broadcast("CustomerListUpdated", getCustomers());
+		}
 	});
 
 	var getCustomers = function() {

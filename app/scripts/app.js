@@ -31,6 +31,7 @@ angular.module('ctsng', [
 	// Especially if they have to start out by registering event handlers
 	, AddCustomerService
 	, AddCustomerLocalStorageService
+    , AddCustomerRESTService
 	){
   console.log('Your angular app is initialized.  Happy hacking!');
 })

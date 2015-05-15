@@ -13,33 +13,47 @@ angular.module('ctsng').service("AddCustomerLocalStorageService", function($root
 	});
 
 	var addCustomer = function(customer) {
-		var customers = [];
+		var customers = getCustomers();
+		customers.push(customer);
+		saveCustomers(customers);
+	};
+
+    var saveCustomers = function(customers) {
+        window.localStorage.setItem("customers", JSON.stringify(customers));
+    }
+
+	$rootScope.$on("CustomerListUpdated", function(evt, data) {
+        var customers = getCustomers();
+		if (customers != data) { // TODO Weak comparison here  - go deeper later
+			console.log("Saving customers!");
+            saveCustomers(data);
+		}
+	});
+	
+	var getCustomers = function() {
 		var wls = window.localStorage.getItem("customers");
 		if (wls) {
-			customers = JSON.parse(wls);
-			// TODO - Use "extend" to convert regular generic object into customer
-			// jQuery, Underscore, or Angular
+			var customers = JSON.parse(wls);
+			for (var i = 0; i < customers.length; i++) {
+				var cust = new Customer();
+				angular.extend(cust, customers[i]);
+				customers[i] = cust;
+			}
+			return customers;
 		}
-		for (var i = 0; i < customers.length; i++) {
-			var cust = new Customer();
-			angular.extend(cust, customers[i]);
-			customers[i] = cust;
-		}
-		customers.push(customer);
-		window.localStorage.setItem("customers", JSON.stringify(customers));
-		//console.log(customers);
+		return [];
 	};
-	
-	var wls = window.localStorage.getItem("customers");
-	if (wls) {
-		var customers = JSON.parse(wls);
-		for (var i = 0; i < customers.length; i++) {
-			var cust = new Customer();
-			angular.extend(cust, customers[i]);
-			customers[i] = cust;
+
+	// Do this on init
+	var init = function() {
+		var customers = getCustomers();
+		if (customers && customers.length > 0) {
+			$rootScope.$broadcast("CustomerListUpdated", getCustomers());
 		}
-		$rootScope.$broadcast("CustomerListUpdated", customers);
 	}
+
+    init();
+
 	
 		
 
